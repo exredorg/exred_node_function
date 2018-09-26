@@ -1,18 +1,30 @@
 defmodule Exred.Node.Function do
   @moduledoc """
-  Documentation for Exred.Node.Function.
+  Executes an arbitrary function to handle incoming messages.
+  
+  ### WARNING: This is extremely unsecure. The function is executed as-is in the same beam VM as the rest of the application.
+  There are no restricitions imposed on what this function can do.
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Exred.Node.Function.hello
-      :world
-
-  """
-  def hello do
-    :world
+  
+  @name "Function"
+  @category "function"
+  @info @moduledoc
+  @config %{
+    name: %{value: @name, type: "string"},
+    code: %{value: "fn(msg, state)->\n\n\t{msg, state}\nend\n", type: "codeblock"}
+  }
+  @ui_attributes %{right_icon: "build" }
+  
+  use Exred.Library.NodePrototype
+  require Logger
+  
+  @impl true
+  def handle_msg(msg, state) do
+    {handler, _} = Code.eval_string(state.config.code.value)
+    {newmsg, newstate} = handler.(msg, state)
+    Logger.debug("SENDING: #{inspect newmsg}")
+    {newmsg, newstate}
   end
+
 end
