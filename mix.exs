@@ -1,13 +1,17 @@
 defmodule Exred.Node.Function.Mixfile do
   use Mix.Project
 
+  @description "Exred node that executes message handler functions defined through the UI"
+
   def project do
     [
       app: :exred_node_function,
       version: "0.1.0",
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
-      deps: deps()
+      deps: deps(),
+      description: @description,
+      package: package()
     ]
   end
 
